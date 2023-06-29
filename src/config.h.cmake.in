@@ -1,0 +1,20 @@
+#pragma once
+
+#cmakedefine MATILDA_ON_LINUX
+#cmakedefine MATILDA_USE_PERF
+
+#cmakedefine MATILDA_USE_LOCAL_RESULT_VECTOR
+#cmakedefine MATILDA_BENCHMARK_THREADS
+
+#cmakedefine HAS_X86_INTRINSICS
+#cmakedefine HAS_AVX2
+#cmakedefine HAS_AVX512F
+
+#cmakedefine HAS_SC_PAGESIZE
+#cmakedefine HAS_SC_NPROCESSORS_ONLN
+#cmakedefine HAS_SCHED_SETAFFINITY
+#cmakedefine HAS_SCHED_SETSCHEDULER
+#cmakedefine HAS_SETPRIORITY
+#cmakedefine HAS_PTHREAD_SETNAME_NP
+
+
