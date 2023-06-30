@@ -53,9 +53,9 @@ The program `matilda_test` will be compiled but not installed. It can be found i
 It can be used to benchmark the timing of the MVM and to verify and optimize parameters such as the kernel and the number of threads.
 The syntax is
 ```sh
-  matilda_test -r number_of_rows -c number_of_colums -k mvm_kernel -t number_of_threads -p index_of_first_processor -l number_loop_repetitions -w number_of_warmup_loops -s us_to_sleep_between_multiplications -o timings_file -P scheduler_priority
+  matilda_test [-r number_of_rows] [-c number_of_colums] [-d] [-l number_loop_repetitions] [-w number_of_warmup_loops] [-o timings_file] [-k mvm_kernel] [-t number_of_threads] [-s us_to_sleep_between_multiplications] [-p index_of_first_processor] [-P scheduler_priority]
 ```
-Refer to file matilda.h for valid values of "-k mvm_kernel".
+The option "-d" converts the matrix to F16C format. Refer to file matilda.h for valid values of "-k mvm_kernel".
 The option "-s us_to_sleep_between_multiplications" is only available if "fixed_delay_spin_loop" or "fixed_delay_stay_busy" in apps/matilda_test.cc are set to "true".
 
 #### Example output:
@@ -195,6 +195,14 @@ The plan is _executed_ to compute the MVM. Between executions, the worker thread
   }
 ```
 While not tested yet, it should be possible to use multiple plans for different MVMs in one program, each using a dedicated set of CPUs.
+
+When using Matilda in a CMake project, is can be linked by adding
+```
+  find_package(Matilda)
+  target_link_libraries( target matilda )
+```
+to the corresping CMakeLists.txt of the project and adding the provided file cmake/FindMatilda.cmake to the projects's ${CMAKE_MODULE_PATH}.
+
 
 ## Credit and Licensing
 Matilda was developed at the [National Solar Observatory (NSO)](https://www.nso.edu) of the United States of America, a federally funded Research and Development Center of the U.S. National Science Foundation (NSF). NSO is managed for NSF by the Association of Universities for Research in Astronomy, Inc. (AURA). 
