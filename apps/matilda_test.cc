@@ -120,7 +120,7 @@ int main( int argc, char **argv )
   char timings_file_name[256];
   timings_file_name[0] = '\0';
   int opt;
-  while(( opt = getopt( argc, argv, "r:c:t:p:l:w:s:o:k:P:h" ))  != -1 )
+  while(( opt = getopt( argc, argv, "r:c:t:p:l:w:s:o:k:P:hd" ))  != -1 )
   {
     switch( opt )
     {
@@ -157,13 +157,16 @@ int main( int argc, char **argv )
       case 'P':
         p.sched_prio = atoi( optarg );
         break;
+      case 'd':
+        p.f16c = true;
+        break;
       case 'h':
       default:
-        std::cerr << "Usage: matilda_test -r number_of_rows -c number_of_colums -l number_loop_repetitions -w number_of_warmup_loops -o timings_file";
+        std::cerr << "Usage: matilda_test [-r number_of_rows] [-c number_of_colums] [-d] [-l number_loop_repetitions] [-w number_of_warmup_loops] [-o timings_file]";
         if constexpr( fixed_delay_spin_loop or fixed_delay_stay_busy )
-          std::cerr << " -s us_to_sleep_between_multiplications";
+          std::cerr << " [-s us_to_sleep_between_multiplications]";
 #ifndef BENCHMARKING_BLAS
-        std::cerr << " -k mvm_kernel -t number_of_threads -p index_of_first_processor -P scheduler_priority";
+        std::cerr << " [-k mvm_kernel] [-t number_of_threads] [-p index_of_first_processor] [-P scheduler_priority]";
 #endif
         std::cerr << "\n";
         exit( EXIT_FAILURE );
@@ -190,6 +193,8 @@ int main( int argc, char **argv )
 #ifndef BENCHMARKING_BLAS
   std::cout << ", using " << p.n_threads << " threads starting at CPU " << p.first_cpu;
 #endif
+  if( p.f16c )
+    std::cout << ". Matrix stored with 16-bit half-precision";
   std::cout << ".\n";
 
 
