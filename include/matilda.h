@@ -39,7 +39,7 @@ namespace Matilda
   enum class ThreadTask : int { Initialize, ComputeMVM, SpinWait, StayBusy, Sleep, Terminate, Dead };
   enum class MvmKernel : int {
 #ifdef HAS_AVX2
-    AVX2_16=25616, AVX2_16_A=256161, AVX2_16_B=256162, AVX2_32=25632, AVX2_40=25640, AVX2_56=25656, AVX2_64=25664,
+    AVX2_16=25616, AVX2_16_A=256161, AVX2_16_B=256162, AVX2_32=25632, AVX2_40=25640, AVX2_48=25648, AVX2_56=25656, AVX2_64=25664,
 #endif
 #ifdef HAS_AVX512F
   AVX512_16=51216, AVX512_32=51232, AVX512_64=51264,

@@ -488,6 +488,74 @@ void mvm_kernel_avx2_40_f16c( float const * mat, float const * vec, size_t width
   _mm256_store_ps( rdi + 32, acc4 );
 }
 
+void mvm_kernel_avx2_48( float const * mat, float const * vec, size_t width, float * rdi )
+{
+  __m256 acc0 = _mm256_setzero_ps();
+  __m256 acc1 = _mm256_setzero_ps();
+  __m256 acc2 = _mm256_setzero_ps();
+  __m256 acc3 = _mm256_setzero_ps();
+  __m256 acc4 = _mm256_setzero_ps();
+  __m256 acc5 = _mm256_setzero_ps();
+
+  float const * const vecEnd = vec + width;
+  while( vec < vecEnd )
+  {
+    __m256 const v = _mm256_broadcast_ss( vec );
+    vec++;
+    acc0 = _mm256_fmadd_ps( v, _mm256_load_ps( mat ), acc0 );
+    acc1 = _mm256_fmadd_ps( v, _mm256_load_ps( mat + 8 ), acc1 );
+    acc2 = _mm256_fmadd_ps( v, _mm256_load_ps( mat + 16 ), acc2 );
+    acc3 = _mm256_fmadd_ps( v, _mm256_load_ps( mat + 24 ), acc3 );
+    acc4 = _mm256_fmadd_ps( v, _mm256_load_ps( mat + 32 ), acc4 );
+    acc5 = _mm256_fmadd_ps( v, _mm256_load_ps( mat + 40 ), acc5 );
+    int const distance = 32*4; // 4 fastest for 2048x2048 with 64 threads // Untested!
+    _mm_prefetch(  mat + distance, _MM_HINT_T0 );      // prefetch 16 elements
+    _mm_prefetch(  mat + distance + 16, _MM_HINT_T0 ); // prefetch another 16 elements
+    mat += 48;
+  }
+
+  _mm256_store_ps( rdi, acc0 );
+  _mm256_store_ps( rdi + 8, acc1 );
+  _mm256_store_ps( rdi + 16, acc2 );
+  _mm256_store_ps( rdi + 24, acc3 );
+  _mm256_store_ps( rdi + 32, acc4 );
+  _mm256_store_ps( rdi + 40, acc5 );
+}
+
+void mvm_kernel_avx2_48_f16c( float const * mat, float const * vec, size_t width, float * rdi )
+{
+  __m256 acc0 = _mm256_setzero_ps();
+  __m256 acc1 = _mm256_setzero_ps();
+  __m256 acc2 = _mm256_setzero_ps();
+  __m256 acc3 = _mm256_setzero_ps();
+  __m256 acc4 = _mm256_setzero_ps();
+  __m256 acc5 = _mm256_setzero_ps();
+
+  float const * const vecEnd = vec + width;
+  while( vec < vecEnd )
+  {
+    __m256 const v = _mm256_broadcast_ss( vec );
+    vec++;
+    acc0 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat ) ) ), acc0 );
+    acc1 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat + 4 ) ) ), acc1 );
+    acc2 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat + 8 ) ) ), acc2 );
+    acc3 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat + 12 ) ) ), acc3 );
+    acc4 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat + 16 ) ) ), acc4 );
+    acc5 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat + 20 ) ) ), acc5 );
+    int const distance = 32*4; // 4 fastest for 2048x2048 with 64 threads // Untested!
+    _mm_prefetch(  mat + distance, _MM_HINT_T0 );      // prefetch 16 elements
+    _mm_prefetch(  mat + distance + 16, _MM_HINT_T0 ); // prefetch another 16 elements
+    mat += 24;
+  }
+
+  _mm256_store_ps( rdi, acc0 );
+  _mm256_store_ps( rdi + 8, acc1 );
+  _mm256_store_ps( rdi + 16, acc2 );
+  _mm256_store_ps( rdi + 24, acc3 );
+  _mm256_store_ps( rdi + 32, acc4 );
+  _mm256_store_ps( rdi + 40, acc5 );
+}
+
 void mvm_kernel_avx2_56( float const * mat, float const * vec, size_t width, float * rdi )
 {
   __m256 acc0 = _mm256_setzero_ps();
