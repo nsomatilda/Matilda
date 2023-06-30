@@ -174,42 +174,92 @@ mvm_plan::mvm_plan( const mvm_param & p ) :
         break;
 #endif
     case MvmKernel::OMP_SIMD_8:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 8;
         mvm_kernel_func = &mvm_kernel_omp_simd<8>;
         break;
     case MvmKernel::OMP_SIMD_16:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 16;
         mvm_kernel_func = &mvm_kernel_omp_simd<16>;
         break;
     case MvmKernel::OMP_SIMD_24:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 24;
         mvm_kernel_func = &mvm_kernel_omp_simd<24>;
         break;
     case MvmKernel::OMP_SIMD_32:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 32;
         mvm_kernel_func = &mvm_kernel_omp_simd<32>;
         break;
     case MvmKernel::OMP_SIMD_40:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 40;
         mvm_kernel_func = &mvm_kernel_omp_simd<40>;
         break;
     case MvmKernel::OMP_SIMD_48:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 48;
         mvm_kernel_func = &mvm_kernel_omp_simd<48>;
         break;
     case MvmKernel::OMP_SIMD_56:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 56;
         mvm_kernel_func = &mvm_kernel_omp_simd<56>;
         break;
     case MvmKernel::OMP_SIMD_64:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 64;
         mvm_kernel_func = &mvm_kernel_omp_simd<64>;
         break;
     case MvmKernel::OMP_SIMD_128:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 128;
         mvm_kernel_func = &mvm_kernel_omp_simd<128>;
         break;
     case MvmKernel::OMP_SIMD_192:
+        if( m_f16c )
+        {
+          std::string msg = std::string( "Matilda - F16C storage not supported when OMP SIMD MVM kernels are used." );
+          throw std::invalid_argument( msg );
+        }
         m_simd_rows = 192;
         mvm_kernel_func = &mvm_kernel_omp_simd<192>;
         break;
