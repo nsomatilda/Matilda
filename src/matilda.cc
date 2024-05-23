@@ -127,6 +127,10 @@ mvm_plan::mvm_plan( const mvm_param & p ) :
         m_simd_rows = 16;
         mvm_kernel_func = m_f16c ? &mvm_kernel_avx2_16_b_f16c : &mvm_kernel_avx2_16_b;
         break;
+    case MvmKernel::AVX2_24:
+        m_simd_rows = 24;
+        mvm_kernel_func = m_f16c ? &mvm_kernel_avx2_24_f16c : &mvm_kernel_avx2_24;
+        break;
     case MvmKernel::AVX2_32:
         m_simd_rows = 32;
         mvm_kernel_func = m_f16c ? &mvm_kernel_avx2_32_f16c : &mvm_kernel_avx2_32;

@@ -369,6 +369,57 @@ void mvm_kernel_avx2_16_f16c( float const * mat, float const * vec, size_t width
   _mm256_store_ps( rdi + 8, acc1 );
 }
 
+void mvm_kernel_avx2_24( float const * mat, float const * vec, size_t width, float * rdi )
+{
+  __m256 acc0 = _mm256_setzero_ps();
+  __m256 acc1 = _mm256_setzero_ps();
+  __m256 acc2 = _mm256_setzero_ps();
+
+  float const * const vecEnd = vec + width;
+  while( vec < vecEnd )
+  {
+    __m256 const v = _mm256_broadcast_ss( vec );
+    vec++;
+    acc0 = _mm256_fmadd_ps( v, _mm256_load_ps( mat ), acc0 );
+    acc1 = _mm256_fmadd_ps( v, _mm256_load_ps( mat + 8 ), acc1 );
+    acc2 = _mm256_fmadd_ps( v, _mm256_load_ps( mat + 16 ), acc2 );
+    int const distance = 32*4; // 4 fastest for 2048x2048 with 64 threads // prefetching not tuned for 24
+    _mm_prefetch(  mat + distance, _MM_HINT_T0 );      // prefetch 16 elements
+    _mm_prefetch(  mat + distance + 16, _MM_HINT_T0 ); // prefetch another 16 elements
+    mat += 24;
+  }
+
+  _mm256_store_ps( rdi, acc0 );
+  _mm256_store_ps( rdi + 8, acc1 );
+  _mm256_store_ps( rdi + 16, acc2 );
+}
+
+void mvm_kernel_avx2_24_f16c( float const * mat, float const * vec, size_t width, float * rdi )
+{
+  __m256 acc0 = _mm256_setzero_ps();
+  __m256 acc1 = _mm256_setzero_ps();
+  __m256 acc2 = _mm256_setzero_ps();
+
+  float const * const vecEnd = vec + width;
+  while( vec < vecEnd )
+  {
+    int const distance = 1*32; // distance doesn't seem to matter here for 3456x3456 matrix, speed up is present as soon as prefetching
+    _mm_prefetch( mat + distance, _MM_HINT_T0 );  // prefetch 32 elements
+
+    __m256 const v = _mm256_broadcast_ss( vec );
+    vec++;
+
+    acc0 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat ) ) ), acc0 );
+    acc1 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat + 4 ) ) ), acc1 );
+    acc2 = _mm256_fmadd_ps( v, _mm256_cvtph_ps( _mm_load_si128( reinterpret_cast<__m128i const *>( mat + 8 ) ) ), acc2 );
+    mat += 12;
+  }
+
+  _mm256_store_ps( rdi, acc0 );
+  _mm256_store_ps( rdi + 8, acc1 );
+  _mm256_store_ps( rdi + 16, acc2 );
+}
+
 void mvm_kernel_avx2_32( float const * mat, float const * vec, size_t width, float * rdi )
 {
   __m256 acc0 = _mm256_setzero_ps();
