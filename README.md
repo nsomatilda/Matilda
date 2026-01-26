@@ -69,11 +69,14 @@ The option "-s us_to_sleep_between_multiplications" is only available if "fixed_
 ```
 The file timings_microseconds.dat contains the timing of each MVM execution, i.e. 200,000 32-bit floating point numbers in the example above.
 
-#### Comparision with Intel MKL and OpenBLAS:
-If installed and detected by CMake, additonal versions of the test program, `matilda_test.mkl` and `matilda_test.openblas`, will be compiled which outsource the MVM via `sgemv()`.  The number of threads and the CPU affinity must be configured externall, e.g.:
+#### Comparision with AMD AOCL, Intel MKL and OpenBLAS:
+If installed and detected by CMake, additonal versions of the test program, `matilda_test.aocl` `matilda_test.mkl` and `matilda_test.openblas`, will be compiled which outsource the MVM via `sgemv()`.  The number of threads and the CPU affinity must be configured externall, e.g.:
 ```
-  OMP_NUM_THREADS=64 taskset --cpu-list 64-127 matilda_test.mkl -r 3584 -c 3456 -l 100000 -w 100000 -s 500 -o timings_microseconds.dat
+  OMP_NUM_THREADS=64 OMP_PLACES="{96}:64 taskset --cpu-list 96-159 matilda_test.mkl -r 3584 -c 3456 -l 100000 -w 100000 -s 500 -o timings_microseconds.dat
 ```
+
+Custom installation paths for AOCL or OpenBLAS can be used, by appending to the `cmake` command, for example `-DAOCL_ROOT=/opt/AMD/aocl/aocl-linux-aocc-5.2.0/aocc/lib -DOPENBLAS_ROOT=/usr/lib/x86_64-linux-gnu/openblas-openmp/`.
+
 (If using Intel MKL on AMD CPUs, refer to https://danieldk.eu/mkl-amd-zen/ for best performance.)
 
 ### Example code:

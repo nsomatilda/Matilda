@@ -39,6 +39,8 @@
 #include <sched.h>
 #include <unistd.h>
 
+#include <dlfcn.h>
+
 #ifdef HAS_X86_INTRINSICS
 #include <x86intrin.h>
 #include <xmmintrin.h>
@@ -108,6 +110,7 @@ int main( int argc, char **argv )
 #endif
   p.n_threads = 64;
   p.first_cpu = 64;
+  p.cpu_interval = 1;
 #ifdef HAS_SCHED_SETAFFINITY
   p.sched_policy = SCHED_FIFO;
   p.sched_prio = 10;
@@ -250,10 +253,19 @@ int main( int argc, char **argv )
 #ifndef BENCHMARKING_BLAS
     snprintf( timings_file_name, sizeof(timings_file_name), "%s_timings_us_r%d_c%d_k%d_t%d_p%d.dat", "matilda", p.n_rows, p.n_cols, p.kernel, p.n_threads, p.first_cpu );
 #else
-    int (* get_num_threads)() = reinterpret_cast<int(*)()>( dlsym( RTLD_DEFAULT, "openblas_get_num_threads" ) );
+#ifdef BLAS_AOCL
+    char const symbol[] = "bli_thread_get_num_threads";
+#elif defined( BLAS_MKL )
+    char const symbol[] = "mkl_get_max_threads";
+#elif defined( BLAS_OPENBLAS )
+    char const symbol[] = "openblas_get_num_threads";
+#else
+#error No interface to get number of thread from BLAS implementation defined.
+#endif
+    int (* get_num_threads)() = reinterpret_cast<int(*)()>( dlsym( RTLD_DEFAULT, symbol ) );
     if( get_num_threads == nullptr )
-      get_num_threads = reinterpret_cast<int(*)()>( dlsym( RTLD_DEFAULT, "mkl_get_max_threads" ) );
-    int n_threads =  (*get_num_threads)();
+      std::cerr << "Failed to load symbol '" << symbol << "' in BLAS library: " << dlerror() << ".\n";
+    int const n_threads = get_num_threads ? (*get_num_threads)() : 0;
     snprintf( timings_file_name, sizeof(timings_file_name), "%s_timings_us_r%d_c%d_t%d.dat", BLAS_PROVIDER, p.n_rows, p.n_cols, n_threads );
 #endif
   }
