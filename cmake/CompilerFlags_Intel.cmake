@@ -1,3 +1,25 @@
+###########################################
+# Trying to find a compatible GCC version #
+###########################################
+execute_process( COMMAND gcc -dumpversion OUTPUT_VARIABLE GCCVERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
+if( GCCVERSION GREATER 11 )
+  message( STATUS "Found GCC version ${GCCVERSION} which is incompatible with Intel ICC, looking for earlier version." )
+  execute_process( COMMAND gcc-11 -dumpversion OUTPUT_VARIABLE GCCVERSION OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE RESULT )
+  if( RESULT EQUAL 0 )
+    message( STATUS "Found GCC version ${GCCVERSION}" )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gcc-name=gcc-11 -DBOOST_DISABLE_CURRENT_LOCATION")
+  else()
+    execute_process( COMMAND gcc-10 -dumpversion OUTPUT_VARIABLE GCCVERSION OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE RESULT )
+    if( RESULT EQUAL 0 )
+      message( STATUS "Found GCC version ${GCCVERSION}" )
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -gcc-name=gcc-10")
+    else()
+      message( FATAL_ERROR "No compatible GCC version (10-11) found." )
+    endif()
+  endif()
+endif()
+
+
 ###########################
 # Set target architecture #
 ###########################
