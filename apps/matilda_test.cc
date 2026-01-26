@@ -176,13 +176,13 @@ int main( int argc, char **argv )
 #ifdef HAS_AVX512F
         std::cerr << ", " << int(Matilda::MvmKernel::AVX512_16) << " (AVX512-16)";
 #endif
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 24 rows:   " << int(Matilda::MvmKernel::OMP_SIMD_24) << " (OMP_SIMD-24)";
 #ifdef HAS_AVX2
         std::cerr << ", " << int(Matilda::MvmKernel::AVX2_24) << " (AVX2-24)";
 #endif
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 32 rows:   " << int(Matilda::MvmKernel::OMP_SIMD_32) << " (OMP_SIMD-32)";
 #ifdef HAS_AVX2
@@ -191,25 +191,25 @@ int main( int argc, char **argv )
 #ifdef HAS_AVX512F
         std::cerr << ", " << int(Matilda::MvmKernel::AVX512_32) << " (AVX512-32)";
 #endif
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 40 rows:   " << int(Matilda::MvmKernel::OMP_SIMD_40) << " (OMP_SIMD-40)";
 #ifdef HAS_AVX2
         std::cerr << ", " << int(Matilda::MvmKernel::AVX2_40) << " (AVX2-40)";
 #endif
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 48 rows:   " << int(Matilda::MvmKernel::OMP_SIMD_48) << " (OMP_SIMD-48)";
 #ifdef HAS_AVX2
         std::cerr << ", " << int(Matilda::MvmKernel::AVX2_48) << " (AVX2-48)";
 #endif
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 56 rows:   " << int(Matilda::MvmKernel::OMP_SIMD_56) << " (OMP_SIMD-56)";
 #ifdef HAS_AVX2
         std::cerr << ", " << int(Matilda::MvmKernel::AVX2_56) << " (AVX2-56)";
 #endif
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 64 rows:   " << int(Matilda::MvmKernel::OMP_SIMD_64) << " (OMP_SIMD-64)";
 #ifdef HAS_AVX2
@@ -218,10 +218,10 @@ int main( int argc, char **argv )
 #ifdef HAS_AVX512F
         std::cerr << ", " << int(Matilda::MvmKernel::AVX512_64) << " (AVX512-64)";
 #endif
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 128 rows: " << int(Matilda::MvmKernel::OMP_SIMD_128) << " (OMP_SIMD-128)";
-        std::cerr << "\n",
+        std::cerr << "\n";
 
         std::cerr << "Chunks of 192 rows: " << int(Matilda::MvmKernel::OMP_SIMD_192) << " (OMP_SIMD-192)";
         std::cerr << "\n",
