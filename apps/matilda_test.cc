@@ -134,8 +134,21 @@ int main( int argc, char **argv )
         p.n_threads = atoi( optarg );
         break;
       case 'p':
-        p.first_cpu = atoi( optarg );
+      {
+        std::string const arg( optarg );
+        auto colon_pos = arg.find( ':' );
+        if( colon_pos == std::string::npos )
+        {
+          p.first_cpu = std::stoi( arg );
+          p.cpu_interval = 1;
+        }
+        else
+        {
+          p.first_cpu = std::stoi( arg.substr( 0, colon_pos ) );
+          p.cpu_interval = std::stoi( arg.substr( colon_pos + 1, std::string::npos ) );
+        }
         break;
+      }
       case 'l':
         n_loops = atoi( optarg );
         break;
@@ -166,7 +179,7 @@ int main( int argc, char **argv )
         if constexpr( fixed_delay_spin_loop or fixed_delay_stay_busy )
           std::cerr << " [-s us_to_sleep_between_multiplications]";
 #ifndef BENCHMARKING_BLAS
-        std::cerr << " [-k mvm_kernel] [-t number_of_threads] [-p index_of_first_processor] [-P scheduler_priority]";
+        std::cerr << " [-k mvm_kernel] [-t number_of_threads] [-p index_of_first_processor[:interval]] [-P scheduler_priority]";
         std::cerr << "\n\navailable mvm_kernels:\n";
         std::cerr << "Chunks of 8 rows:     " << int(Matilda::MvmKernel::OMP_SIMD_8) << " (OMP_SIMD-8)\n";
         std::cerr << "Chunks of 16 rows:   " << int(Matilda::MvmKernel::OMP_SIMD_16) << " (OMP_SIMD-16)";
@@ -249,7 +262,7 @@ int main( int argc, char **argv )
   if constexpr( fixed_delay_spin_loop or fixed_delay_stay_busy )
     std::cout << " with " << wait/1000 << " micro-seconds in-between";
 #ifndef BENCHMARKING_BLAS
-  std::cout << ", using " << p.n_threads << " threads starting at CPU " << p.first_cpu;
+  std::cout << ", using " << p.n_threads << " threads running on CPUs " << p.first_cpu << ':' << p.cpu_interval << ':' << p.first_cpu + p.n_threads * p.cpu_interval - 1;
 #endif
   if( p.f16c )
     std::cout << ". Matrix stored with 16-bit half-precision";

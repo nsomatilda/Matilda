@@ -56,7 +56,8 @@ namespace Matilda
     MvmKernel kernel;    ///< Processing kernel used for the MVM.
     int n_threads;       ///< Number of parallel threads for the multiplication. These threads will be created in addition to the calling thread.
                          ///< The calling thread syncronizes the threads but does is not involved with tha parallel matrix-vector multiplication.
-    int first_cpu;       ///< Index of the CPU used by the first thread. All other threads will be contiguous on subsequent CPUs.
+    int first_cpu;       ///< Index of the CPU used by the first thread. All other threads will be spaced by m_cpu_interval on subsequent CPUs.
+    int cpu_interval;    ///< Distance between the CPUs that will run the MVM threads.
     int sched_policy;    ///< Operating system scheduler policy for the threads.
     int sched_prio;      ///< Operating system schedulder priority for the threads.
     int nice;            ///< Operating system schedulder priority ("nice level") for the threads.
@@ -139,7 +140,8 @@ namespace Matilda
       float * m_busy_vector;            // Pointer to the input vector for the multiplication used when staying busy.
       bool m_f16c;                      // Use F16C format to store matrix data?
       MvmKernel m_kernel;               // Kernel used in the MVM.
-      int const m_first_cpu;            // Index of the CPU used by the first thread. All other threads will be contiguous on subsequent CPUs.
+      int const m_first_cpu;            // Index of the CPU used by the first thread. All other threads will be spaced by m_cpu_interval on subsequent CPUs.
+      int const m_cpu_interval;         // Distance between the CPUs that will run the MVM threads.
       int const m_sched_policy;         // Operating system scheduler policy for the threads.
       int const m_sched_prio;           // Operating system schedulder priority for the threads.
       int const m_nice;                 // Operating system schedulder priority ("nice level") for the threads.

@@ -102,6 +102,7 @@ mvm_plan::mvm_plan( const mvm_param & p ) :
     m_f16c( p.f16c ),
     m_kernel( p.kernel ),
     m_first_cpu( p.first_cpu ),
+    m_cpu_interval( p.cpu_interval ),
     m_sched_policy( p.sched_policy ),
     m_sched_prio( p.sched_prio ),
     m_nice( p.nice ),
@@ -358,8 +359,14 @@ void mvm_plan::check_arguments( const mvm_param & p ) const
     throw std::invalid_argument( msg );
   }
 
+  if( p.cpu_interval < 1 )
+  {
+    std::string msg = std::string( "Matilda - CPU interval is less than 1." );
+    throw std::invalid_argument( msg );
+  }
+
   long const num_cpus = sysconf( _SC_NPROCESSORS_ONLN );
-  if( p.first_cpu + p.n_threads > num_cpus )
+  if( p.first_cpu + p.n_threads * p.cpu_interval > num_cpus )
   {
     std::string msg = std::string( "Matilda - Number of worker threads exceeds number of available CPU cores." );
     throw std::invalid_argument( msg );
@@ -548,7 +555,7 @@ void mvm_plan::thread_impl_initialize( int threadnr )
 #ifdef HAS_SCHED_SETAFFINITY 
   cpu_set_t cps;
   CPU_ZERO( &cps);
-  CPU_SET( m_first_cpu + threadnr, &cps );
+  CPU_SET( m_first_cpu + threadnr * m_cpu_interval, &cps );
   if( sched_setaffinity( 0, sizeof(cps), &cps ) != 0 )
     perror( "Matilda - sched_setaffinity failed" );
 #endif

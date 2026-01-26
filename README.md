@@ -53,7 +53,7 @@ The program `matilda_test` will be compiled but not installed. It can be found i
 It can be used to benchmark the timing of the MVM and to verify and optimize parameters such as the kernel and the number of threads.
 The syntax is
 ```sh
-  matilda_test [-r number_of_rows] [-c number_of_colums] [-d] [-l number_loop_repetitions] [-w number_of_warmup_loops] [-o timings_file] [-k mvm_kernel] [-t number_of_threads] [-s us_to_sleep_between_multiplications] [-p index_of_first_processor] [-P scheduler_priority]
+  matilda_test [-r number_of_rows] [-c number_of_colums] [-d] [-l number_loop_repetitions] [-w number_of_warmup_loops] [-o timings_file] [-k mvm_kernel] [-t number_of_threads] [-s us_to_sleep_between_multiplications] [-p index_of_first_processor[:interval]] [-P scheduler_priority]
 ```
 The option "-d" converts the matrix to F16C format. Refer to file matilda.h for valid values of "-k mvm_kernel".
 The option "-s us_to_sleep_between_multiplications" is only available if "fixed_delay_spin_loop" or "fixed_delay_stay_busy" in apps/matilda_test.cc are set to "true".
@@ -61,9 +61,9 @@ The option "-s us_to_sleep_between_multiplications" is only available if "fixed_
 #### Example output:
   ```
     matilda_test -r 3584 -c 3456 -k 25656 -t 64 -p 64 -l 100000 -w 100000 -s 500 -o timings_microseconds.dat -P 10
-    Computing 3584x3456 MVM 100000 times (+ 100000 times for warming up) with 500 micro-seconds in-between, using 64 threads starting at CPU 64.
+    Computing 3584x3456 MVM 100000 times (+ 100000 times for warming up) with 500 micro-seconds in-between, using 64 threads running on CPUs 96:1:159.
     Using 1 56x3456 matrix block(s) per thread (756 kiB)
-    26.439 +/- 0.353 us per 3584x3456 MVM. (937 GFLOP/s), min: 22.740 us (1089 GFLOP/s), max: 30.640 us (808 GFLOP/s), 3450
+    13.305 +/- 1.428 us per 3584x3456 MVM. (1862 GFLOP/s), min: 11.060 us (2240 GFLOP/s), max: 355.560 us (70 GFLOP/s), 3450
     MVM correct within 1.0e-05
     Writing MVM timings (32-bit floats) to timings_microseconds.dat.
 ```
@@ -119,7 +119,8 @@ The plan is _executed_ to compute the MVM. Between executions, the worker thread
     p.kernel = Matilda::MvmKernel::AVX2_56; // Processing kernel used for the MVM. See matilda.h for options.
     p.n_threads = 64;  // Number of parallel threads for the multiplication. These threads will be created in addition to the calling thread.
                        // The calling thread syncronizes the threads but does is not involved with tha parallel matrix-vector multiplication.
-    p.first_cpu = 64;  // Index, starting at 0, of the CPU used by the first thread. All other threads will be contiguous on subsequent CPUs.
+    p.first_cpu = 64;  // Index, starting at 0, of the CPU used by the first thread. All other threads will run on subsequent CPUs spaced by p.cpu_interval
+    p.cpu_interval = 1;// Distance between the CPUs that will run the MVM threads.
     p.sched_policy = SCHED_FIFO; // Operating system scheduler policy for the threads. 
                                  // Note: SCHED_FIFO is a Linux real-time policy and can freeze systems if the system is not configured accordingly.
                                  // Use of SCHED_OTHER on standard Linux systems is recommended.
